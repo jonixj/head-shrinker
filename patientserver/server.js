@@ -7,7 +7,7 @@ var shrinkService = require('http').createServer(app);
 patientService.path='patient';
 var patientWebSocketServer = require('socket.io')(patientService);
 var shrinkWebSocketServer = require('socket.io')(shrinkService);
-var shrinkPort = 4000;
+var shrinkPort = 3000;
 var patientPort = 4001;
 var shrinkServer = 'http://10.59.1.206:3000/johan';
 var sockClient = require('socket.io-client');
@@ -40,7 +40,7 @@ patientWebSocketServer.on('connection', function(socket) {
 		console.log('session started ,', userName);
 		patientWebSocketServer.emit('started');
 		johanSocket.emit('start-session', {"patient" : userName});
-	});	
+	});
 	socket.on('message', function(msg) {
 		receiver = msg.receiver;
 		text = msg.text;
@@ -55,7 +55,7 @@ patientWebSocketServer.on('connection', function(socket) {
 		userName = msg.userName;
 		console.log('session started ,', userName);
 		patientWebSocketServer.emit('started');
-	});	
+	});
 	socket.on('ping', function(msg) {
 		console.log('Got pinged');
 		patientWebSocketServer.emit('pong', msg);
