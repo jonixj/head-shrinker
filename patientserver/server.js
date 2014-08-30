@@ -52,8 +52,18 @@ johanSocket.on('message', function(msg) {
 	var patient = msg.patient;
 	var text = msg.text;
 	console.log('Received %s for %s', text, receiver);
-	var patientSocket = patientSocketMap[patient];
-	patientSocket.emit('message', text);
+	var patientSocket = patientSessionMap[patient];
+	patientSocket.emit('message', {
+		'msg' : text
+	});
+});
+
+app.put('/configuration/psykserver', function(req, res) {
+	johanSocket = sockClient.connect(req.query, {
+		'reconnect' : true,
+		'reconnectionDelay' : 30000
+	});
+	res.send('Tack!');
 });
 
 patientWebSocketServer.on('connection', function(socket) {
@@ -72,7 +82,7 @@ patientWebSocketServer.on('connection', function(socket) {
 			'shrink' : 'Dr Ruth'
 		});
 		var userName = msg.userName;
-		console.log('session started ,', userName);
+		console.log('Session started. Whacko is ', userName);
 		johanSocket.emit('start-session', {
 			"patient" : userName
 		});
@@ -80,8 +90,10 @@ patientWebSocketServer.on('connection', function(socket) {
 		socket.patient = userName;
 	});
 
-	socket.on('message', function(text) {
-		console.log('Received %s for %s', text, receiver);
+	socket.on('message', function(msg) {
+		text = msg.msg;
+		userName = socket.patient;
+		console.log('Received %s', text);
 		johanSocket.emit('patient-message', {
 			"patient" : userName,
 			"text" : text
@@ -94,6 +106,17 @@ johanSocket.on('connection', function(socket) {
 });
 
 // Test blocks
+app.post('/shrink/send/', function(req, res) {
+	var q = req.query;
+	var p = q.patient;
+	var t = q.text;
+	var patientSocket = patientSessionMap[p];
+	patientSocket.emit('message', {
+		'msg' : t
+	});
+	res.send("Tack");
+});
+
 app.post('/patient/send/', function(req, res) {
 	socket = sockClient.connect(shrinkServer, {
 		reconnect : true,
@@ -102,7 +125,9 @@ app.post('/patient/send/', function(req, res) {
 		console.log('Client failed to connect ', object);
 	});
 	message = req.query;
-	socket.emit('message', message);
+	socket.emit('message', {
+		'msg' : message
+	});
 	console.log('Sent %s to %s', message, shrinkServer);
 	res.send('Message passed on');
 });
