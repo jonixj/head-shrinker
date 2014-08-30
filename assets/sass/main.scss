@@ -31,12 +31,10 @@ header {
 section {
   margin: 0 auto;
   padding: 2rem;
-  width: 80%;
+  width: 60%;
+  min-width: 600px;
   background: #e1e1e1;
   border-radius: 5px;
 }
 
-// chat-box {
-//   opacity: 1;
-//   transition: opacity 300ms;
-// }
+@import "beautons";
