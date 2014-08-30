@@ -6,16 +6,13 @@ var wackoIo = require('socket.io')(wackoServer);
 var clerkServer = require('http').createServer(app);
 var clerkIo = require('socket.io')(clerkServer);
 app.use(bodyParser.json());
-var anders = require('socket.io-client');
-var andersSocket = anders.connect("10.59.1.182:4000/anders", {reconnect: true})
-app.use(bodyParser.json());
 wackoServer.path = "/johan";
 
 wackoServer.listen(wackoPort = 3000);
 wackoServer.listen(clerkPort = 4002);
 
-var sessions = [];
-var clerks = [];
+var wackoSessions = [];
+var clerkSessions = [];
 
 wackoIo.on('connection', function (socket) {
     socket.on('message', function (msg) {
@@ -23,6 +20,10 @@ wackoIo.on('connection', function (socket) {
     });
     socket.on('start-session', function (msg) {
         wackoWasConnected(msg);
+        match();
+    });
+    socket.on('disconnect', function () {
+        socket.ondisconnect();
     });
 });
 clerkIo.on('connection', function (socket) {
@@ -31,34 +32,69 @@ clerkIo.on('connection', function (socket) {
     });
     socket.on('start', function (msg) {
         clerkWasConnected(msg);
+        match();
+    });
+    socket.on('disconnect', function () {
+        socket.ondisconnect();
     });
 });
 
+var match = function () {
+    if (wackoSessions.length > 0 && clerkSessions.length > 0) {
+        var wackoSession = wackoSessions.pop();
+        var clerkSession = clerkSessions.pop();
+
+        clerkSession.onMessage = function (msg) {
+            wackoSession.socket.emit(msg);
+        };
+        wackoSession.onMessage = function (msg) {
+            clerkSession.socket.emit(msg);
+        };
+        wackoSession.messages.forEach(function (msg) {
+            clerkSession.socket.emit(msg);
+        });
+        wackoSession.onDisconnect = function(){
+            clerkSession.socket.emit("Din klient stack");
+            clerkSessions.push(clerkSession);
+        };
+        clerkSession.onDisconnect = function(){
+            clerkSessions.push(clerkSession);
+        };
+    }
+};
+
 var wackoWasConnected = function (msg, socket) {
-    andersSocket.emit("session-started", "OK!");
+    socket.emit("session-started", "OK!");
     var name = msg.data.username;
-    var session = {wacko: name, clerk: findAClerk(), socket: socket, messages: []};
+    var session = {username: name, socket: socket, messages: []};
     session.onMessage = function (msg) {
         session.messages.push(msg);
     };
-    sessions[socket.id] = session;
+    session.onDisconnect = function () {
+        delete wackoSessions[socket.id];
+    };
+    wackoSessions[socket.id] = session;
 };
 
-var clerkWasConnected = function(msg, socket){
-    socket.username = msg.username;
-    clerks[msg.username] = socket;
-}
+var clerkWasConnected = function (msg, socket) {
+    socket.emit("session-started", "OK!");
+    var name = msg.data.username;
+    var session = {username: name, socket: socket, messages: []};
+    session.onMessage = function (msg) {
+        socket.emit("session-started", "Väntar på jobb");
+    };
+    session.onDisconnect = function () {
+        delete clerkSessions[socket.id];
+    };
+    clerkSessions[socket.id] = session;
+};
 
 var wackoMessageWasReceived = function (msg, socket) {
-    socket.emit("Detta är en fråga till psykologen");
+    var storedSession = wackoSessions[socket.id];
+    storedSession.onMessage();
 };
 
 var clerkMessageWasReceived = function (msg, socket) {
-    var storedSession = sessions[socket.id];
+    var storedSession = clerkSessions[socket.id];
     storedSession.onMessage(msg);
 };
-
-var findAClerk = function () {
-    return clerks.pop();
-}
-
