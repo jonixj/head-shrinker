@@ -4,19 +4,21 @@ var bodyParser = require('body-parser');
 var patientService = require('http').createServer(app);
 var shrinkService = require('http').createServer(app);
 
-patientService.path='patient';
+patientService.path = 'patient';
 var patientWebSocketServer = require('socket.io')(patientService);
 var shrinkWebSocketServer = require('socket.io')(shrinkService);
-var shrinkPort = 3000;
+var shrinkPort = 4000;
 var patientPort = 4001;
 var shrinkServer = 'http://10.59.1.206:3000/johan';
 var sockClient = require('socket.io-client');
 app.use(bodyParser.json());
 app.use(express.static(__dirname + '/public'));
-app.use('/bower_components',  express.static(__dirname + '/../bower_components'));
-app.use('/assets',  express.static(__dirname + '/../assets'));
+app
+		.use('/bower_components', express.static(__dirname
+				+ '/../bower_components'));
+app.use('/assets', express.static(__dirname + '/../assets'));
 
-shrinkService.path='shrink';
+shrinkService.path = 'shrink';
 shrinkService.listen(shrinkPort, function() {
 	console.log('Listening on port %d', shrinkPort);
 });
@@ -32,27 +34,46 @@ johanSocket.on('connect_error', function(object) {
 	console.log('Client failed to connect to Johan\'s server ', args);
 });
 
+var patientSessionMap = {};
+
 patientWebSocketServer.on('connection', function(socket) {
+	socket.on('disconnect', function(object) {
+		if (socket.hasOwnProperty('patient')) {
+			console.log('Clearing session of ', socket.patient);
+			delete patientSessionMap[socket.patient];
+			delete socket.patient;
+		}
+	});
 	console.log('Client connected');
 	socket.on('start', function(msg) {
-		socket.emit('started', {'shrink' : 'Dr Ruth'});
+		socket.emit('started', {
+			'shrink' : 'Dr Ruth'
+		});
 		var userName = msg.userName;
 		console.log('session started ,', userName);
 		patientWebSocketServer.emit('started');
-		johanSocket.emit('start-session', {"patient" : userName});
+		johanSocket.emit('start-session', {
+			"patient" : userName
+		});
+		patientSessionMap[userName] = socket;
+		socket.patient = userName;
 	});
 	socket.on('message', function(msg) {
 		receiver = msg.receiver;
 		text = msg.text;
 		console.log('Received %s for %s', text, receiver);
-		johanSocket.emit('patient-message', {"patient" : userName, "text" : text});
+		johanSocket.emit('patient-message', {
+			"patient" : userName,
+			"text" : text
+		});
 	});
 });
 
-patientWebSocketServer.on('connection', function(socket) {
+shrinkWebSocketServer.on('connection', function(socket) {
 	console.log('Client connected');
-	socket.on('start', function(msg) {
-		userName = msg.userName;
+	socket.on('session-started', function(msg) {
+		var userName = msg.userName;
+		var shrinkName = msg.shrinkName;
 		console.log('session started ,', userName);
 		patientWebSocketServer.emit('started');
 	});
@@ -66,7 +87,6 @@ patientWebSocketServer.on('connection', function(socket) {
 		console.log('Received %s for %s', text, receiver);
 	});
 });
-
 
 // Test blocks
 app.post('/patient/send/', function(req, res) {
