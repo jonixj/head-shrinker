@@ -1,6 +1,8 @@
 var express = require('express');
 var app = express();
 var bodyParser = require('body-parser');
+app.use(bodyParser.json());
+// app.use(bodyParser.urlencoded());
 var patientService = require('http').createServer(app);
 var shrinkService = require('http').createServer(app);
 
@@ -9,7 +11,6 @@ var patientWebSocketServer = require('socket.io')(patientService);
 var patientPort = 4001;
 var shrinkServer = 'http://10.59.1.206:3000/johan';
 var sockClient = require('socket.io-client');
-app.use(bodyParser.json());
 app.use(express.static(__dirname + '/public'));
 app
 		.use('/bower_components', express.static(__dirname
@@ -107,10 +108,14 @@ johanSocket.on('connection', function(socket) {
 
 // Test blocks
 app.post('/shrink/send/', function(req, res) {
-	var q = req.query;
-	var p = q.patient;
-	var t = q.text;
+	//console.log("Received post ", req);
+	var  b = req.body;
+	var p = b.patient;
+	var t = b.text;
+	console.log("Received text", t);
 	var patientSocket = patientSessionMap[p];
+	// console.log("Using pationt-socket-map ", patientSessionMap);
+	// console.log("Sending to socket ", patientSocket);
 	patientSocket.emit('message', {
 		'msg' : t
 	});
@@ -128,7 +133,7 @@ app.post('/patient/send/', function(req, res) {
 	socket.emit('message', {
 		'msg' : message
 	});
-	console.log('Sent %s to %s', message, shrinkServer);
+	console.log('Sent ', message , 'to ', shrinkServer);
 	res.send('Message passed on');
 });
 
