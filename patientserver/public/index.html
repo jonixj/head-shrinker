@@ -19,10 +19,16 @@
     <span>Shrink</span>
   </header>
   <section>
+    <ul id="chat-log"></ul>
     <chat-box></chat-box>
   </section>
   <script>
     var socket = io();
+
+    socket.on('message', function (msg) {
+      $('#chat-log').append($('<li>').text(msg.text));
+    });
+
     document.querySelector('chat-box').addEventListener('login', function(e) {
 			socket.emit('start', {userName : e.detail.username});
       console.log(e.detail.username);
