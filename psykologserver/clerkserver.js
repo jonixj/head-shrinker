@@ -18,6 +18,7 @@ var wackoSessions = [];
 var clerkSessions = [];
 
 wackoIo.on('connection', function (socket) {
+	console.log("Connected client: ", socket);
     socket.on('message', function (msg) {
         wackoMessageWasReceived(msg, socket);
     });
