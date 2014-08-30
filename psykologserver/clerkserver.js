@@ -30,7 +30,7 @@ wackoIo.on('connection', function (socket) {
     });
 });
 clerkIo.on('connection', function (socket) {
-    socket.on('message', function (msg) {
+    socket.on('patient-message', function (msg) {
         clerkMessageWasReceived(msg, socket);
     });
     socket.on('start', function (msg) {
