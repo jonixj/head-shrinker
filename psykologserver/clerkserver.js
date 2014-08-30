@@ -20,11 +20,11 @@ var clerkSessions = [];
 wackoIo.on('connection', function (socket) {
     console.log("wacko-connected´", socket.id);
     socket.on('patient-message', function (msg) {
-        console.log("wacko-Anders skickade", msg);
+        console.log("wacko-Anders skickade", msg, socket.id);
         wackoMessageWasReceived(msg, socket);
     });
     socket.on('message', function (msg) {
-        console.log("waco-message", msg);
+        console.log("wacko-Anders skickade", msg, socket.id);
         wackoMessageWasReceived(msg, socket);
     });
     socket.on('patient-message', function (msg) {
@@ -48,6 +48,10 @@ clerkIo.on('connection', function (socket) {
     socket.on('message', function (msg) {
         console.log("clerk-msg", msg);
         clerkMessageWasReceived(msg, socket);
+    });
+    socket.on('patient-message', function (msg) {
+        console.log("waco-message", msg);
+        wackoMessageWasReceived(msg, socket);
     });
     socket.on('start-session', function (msg) {
         console.log("Clerk startade session");
