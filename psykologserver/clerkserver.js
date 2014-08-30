@@ -28,6 +28,8 @@ wackoIo.on('connection', function (socket) {
         wackoMessageWasReceived(msg, socket);
     });
     socket.on('start-session', function (msg) {
+    	console.log("session started ", msg);
+    	
         wackoWasConnected(msg, socket);
         match();
     });
