@@ -12,7 +12,7 @@ app.use('/bower_components', express.static(__dirname + '/../bower_components'))
 app.use('/assets', express.static(__dirname + '/../assets'));
 
 wackoServer.listen(wackoPort = 3000);
-wackoServer.listen(clerkPort = 4002);
+clerkServer.listen(clerkPort = 4002);
 
 var wackoSessions = [];
 var clerkSessions = [];
