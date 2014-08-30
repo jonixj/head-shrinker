@@ -14,6 +14,7 @@
         padding: 10px 20px;
         margin: 0 2rem 0 0;
         font-size: 1.2rem;
+        width: 230px;
       }
 
       label {
@@ -66,10 +67,15 @@
             padding: 0;
         }
     </style>
-    <form>
-      <label for="username">Ange ditt namn</label>
-      <input pattern=".{3,}" title="Ange minst tre tecken" autofocus type="text" id="username" required placeholder="ex. Anders Holm" />
-      <a class="btn" href="#">Gå vidare</a>
-    </form>
+      <label for="username">Ange ditt namn:</label>
+      <input id="username" pattern=".{3,}" title="Ange minst tre tecken" autofocus type="text" id="username" required placeholder="ex. Anders Holm" />
+      <button on-click="{{login}}" class="btn">Gå vidare</button>
   </template>
+  <script>
+    Polymer({
+      login: function () {
+        this.fire('login', {username: this.$.username.value});
+      }
+    });
+  </script>
 </polymer-element>
