@@ -13,6 +13,11 @@ server.listen(port, function() {
 
 io.on('connection', function(socket) {
 	socket.on('ping', function(msg) {
+		console.log('Got pinged');
+		io.emit('pong', msg);
+	});
+	socket.on('message', function(msg) {
+		console.log('Got pinged');
 		io.emit('pong', msg);
 	});
 });
