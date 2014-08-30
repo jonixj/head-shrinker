@@ -31,7 +31,7 @@ wackoIo.on('connection', function (socket) {
     });
 });
 clerkIo.on('connection', function (socket) {
-    socket.on('patient-message', function (msg) {
+    socket.on('message', function (msg) {
         clerkMessageWasReceived(msg, socket);
     });
     socket.on('start', function (msg) {
