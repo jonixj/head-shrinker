@@ -1,80 +1,41 @@
 <link rel="import" href="/bower_components/polymer/polymer.html">
 
-<polymer-element name="chat-box" noscript>
+<polymer-element name="chat-box">
   <template>
-    <style>
-      :host {
-        display: block;
-      }
-
-      input {
-        background-color: #f9fafa;
-        border-radius: 4em;
-        border: solid 1px #f2f2f2;
-        padding: 10px 20px;
-        margin: 0 2rem 0 0;
-        font-size: 1.2rem;
-        width: 230px;
-      }
-
-      label {
-        font-size: 1.4rem;
-        margin-right: 1em;
-      }
-
-      .btn {
-          display: inline-block;
-          vertical-align: top;
-          white-space: nowrap;
-          font-family: inherit;
-          font-size: 100%;
-          cursor: pointer;
-          border: none;
-          margin: 0;
-          padding-top: 0;
-          padding-bottom: 0;
-          line-height: 45px;
-          height: 45px;
-          padding-right: 1em;
-          padding-left: 1em;
-          background-color: #2c77ba;
-          border-radius: 4px;
-          overflow: visible;
-          float: right;
-      }
-
-      .btn,
-        .btn:hover,
-        .btn:active,
-        .btn:focus,
-        .btn:visited{
-            text-decoration: none;
-            color: #fff;
-        }
-
-        .btn:hover,
-        .button:focus{
-            box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
-        }
-
-        .btn:active{
-            outline: none;
-            box-shadow: 0 0 5px rgba(0, 0, 0, 0.5) inset;
-        }
-
-        .btn::-moz-focus-inner {
-            border: 0;
-            padding: 0;
-        }
-    </style>
+    <link rel="stylesheet" href="chat-box.css" />
+    <form id="loginForm" on-keypress="{{loginKeypressHandler}}">
       <label for="username">Ange ditt namn:</label>
       <input id="username" pattern=".{3,}" title="Ange minst tre tecken" autofocus type="text" id="username" required placeholder="ex. Anders Holm" />
       <button on-click="{{login}}" class="btn">Gå vidare</button>
+    </form>
+    <form id="chatForm" on-keypress="{{chatKeypressHandler}}">
+      <textarea id="message"></textarea>
+      <button on-click="{{chat}}" class="btn btn--chat">Skicka</button>
+    </form>
   </template>
   <script>
     Polymer({
+      loginKeypressHandler: function(event) {
+        if (event.keyCode === 13) {
+          this.login();
+          event.preventDefault();
+        }
+      },
       login: function () {
         this.fire('login', {username: this.$.username.value});
+
+        this.$.loginForm.style.display = 'none';
+        this.$.chatForm.style.display = 'block';
+      },
+      chatKeypressHandler: function (event) {
+       if (event.keyCode === 13) {
+          this.chat();
+          event.preventDefault();
+        }
+      },
+      chat: function () {
+        this.fire('chat', {message: this.$.message.value});
+        this.$.message.value = '';
       }
     });
   </script>
