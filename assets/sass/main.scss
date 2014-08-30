@@ -1,13 +1,12 @@
 body {
-    font-family: "Roboto", sans-serif;
-
     color: #666666;
+    font-family: 'Open Sans', sans-serif;
 }
 
 header {
     display: flex;
 
-    margin-top: 2rem;
+    margin: 2rem 0 3rem;
 
     text-align: center;
 
@@ -18,6 +17,7 @@ header {
       font-size: 2rem;
       font-weight: bold;
       color: cadetblue;
+      font-family: 'Abril Fatface', cursive;
     }
 
     img {
@@ -30,5 +30,13 @@ header {
 
 section {
   margin: 0 auto;
-  padding: 5rem;
+  padding: 2rem;
+  width: 80%;
+  background: #e1e1e1;
+  border-radius: 5px;
 }
+
+// chat-box {
+//   opacity: 1;
+//   transition: opacity 300ms;
+// }

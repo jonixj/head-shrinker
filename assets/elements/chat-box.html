@@ -2,6 +2,28 @@
 
 <polymer-element name="chat-box" noscript>
   <template>
-    <span>Det här ska bli en chat-box.</span>
+    <style>
+      :host {
+        display: block;
+      }
+
+      input {
+        background-color: #f9fafa;
+        border-radius: 4em;
+        border: solid 1px #f2f2f2;
+        padding: 10px 20px;
+        margin: .2em 0;
+        font-size: 1.2rem;
+      }
+
+      label {
+        font-size: 1.4rem;
+        margin-right: 1em;
+      }
+    </style>
+    <form>
+      <label for="username">Ange ditt namn</label>
+      <input pattern=".{3,}" title="Ange minst tre tecken" autofocus type="text" id="username" required placeholder="ex. Anders Holm" />
+    </form>
   </template>
 </polymer-element>
