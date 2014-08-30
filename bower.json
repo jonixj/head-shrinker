@@ -1,0 +1,26 @@
+{
+  "name": "head-shrink",
+  "version": "1.0.0",
+  "main": "assets/main.css",
+  "ignore": [
+    ".jshintrc",
+    "**/*.txt",
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "core-component-page": "Polymer/core-component-page#>=0.4.0 <1.0.0"
+  },
+  "devDependencies": {
+    "<test-framework-name>": "<version>"
+  },
+  "homepage": "https://github.com/jonixj/head-shrinker",
+  "authors": [
+    "Mikael Ek <mikael.ek@cygni.se>"
+  ],
+  "license": "MIT",
+  "private": true
+}
