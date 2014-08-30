@@ -1,15 +1,16 @@
 var express = require('express');
 var app = express();
 var bodyParser = require('body-parser');
+app.use(bodyParser.json());
+// app.use(bodyParser.urlencoded());
 var patientService = require('http').createServer(app);
-var shrinkService = require('http').createServer(app);
 
 patientService.path = 'patient';
 var patientWebSocketServer = require('socket.io')(patientService);
 var patientPort = 4001;
+//var shrinkServer = 'http://localhost:3000/johan';
 var shrinkServer = 'http://10.59.1.206:3000/johan';
 var sockClient = require('socket.io-client');
-app.use(bodyParser.json());
 app.use(express.static(__dirname + '/public'));
 app
 		.use('/bower_components', express.static(__dirname
@@ -58,6 +59,10 @@ johanSocket.on('message', function(msg) {
 	});
 });
 
+johanSocket.on('connect', function(msg) {
+	console.log('Connected to Johan\'s server');
+});
+
 app.put('/configuration/psykserver', function(req, res) {
 	johanSocket = sockClient.connect(req.query, {
 		'reconnect' : true,
@@ -93,11 +98,13 @@ patientWebSocketServer.on('connection', function(socket) {
 	socket.on('message', function(msg) {
 		text = msg.msg;
 		userName = socket.patient;
+		;
 		console.log('Received %s', text);
-		johanSocket.emit('patient-message', {
-			"patient" : userName,
-			"text" : text
-		});
+		var msg = {};
+		msg.patient = userName;
+		msg.text = text;
+		console.log("Sending ", msg)
+		johanSocket.emit('patient-message', msg);
 	});
 });
 
@@ -107,12 +114,14 @@ johanSocket.on('connection', function(socket) {
 
 // Test blocks
 app.post('/shrink/send/', function(req, res) {
-	var q = req.query;
-	var p = q.patient;
-	var t = q.text;
+	// console.log("Received post ", req);
+	var b = req.body;
+	var p = b.patient;
+	var t = b.text;
+	console.log("Received text", t);
 	var patientSocket = patientSessionMap[p];
 	patientSocket.emit('message', {
-		'msg' : t
+		'text' : t
 	});
 	res.send("Tack");
 });
@@ -128,7 +137,7 @@ app.post('/patient/send/', function(req, res) {
 	socket.emit('message', {
 		'msg' : message
 	});
-	console.log('Sent %s to %s', message, shrinkServer);
+	console.log('Sent ', message, 'to ', shrinkServer);
 	res.send('Message passed on');
 });
 
