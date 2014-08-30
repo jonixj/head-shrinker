@@ -59,6 +59,10 @@ johanSocket.on('message', function(msg) {
 	});
 });
 
+johanSocket.on('connect', function(msg) {
+	console.log('Connected to Johan\'s server');
+});
+
 app.put('/configuration/psykserver', function(req, res) {
 	johanSocket = sockClient.connect(req.query, {
 		'reconnect' : true,
@@ -114,10 +118,8 @@ app.post('/shrink/send/', function(req, res) {
 	var t = b.text;
 	console.log("Received text", t);
 	var patientSocket = patientSessionMap[p];
-	// console.log("Using pationt-socket-map ", patientSessionMap);
-	// console.log("Sending to socket ", patientSocket);
 	patientSocket.emit('message', {
-		'msg' : t
+		'text' : t
 	});
 	res.send("Tack");
 });
