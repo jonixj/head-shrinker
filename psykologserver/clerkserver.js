@@ -17,6 +17,7 @@ clerkServer.listen(clerkPort = 4002);
 var router = require('socket.io-events')();
 router.on('*', function (sock, args, next) {
   var name = args.shift(), msg = args.shift();
+  console.log("router*",msg);
   sock.emit('message', name, msg);
 });
 wackoIo.use(router);
