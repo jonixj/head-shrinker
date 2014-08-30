@@ -6,8 +6,6 @@ var shrinkService = require('http').createServer(app);
 
 patientService.path = 'patient';
 var patientWebSocketServer = require('socket.io')(patientService);
-var shrinkWebSocketServer = require('socket.io')(shrinkService);
-var shrinkPort = 4000;
 var patientPort = 4001;
 var shrinkServer = 'http://10.59.1.206:3000/johan';
 var sockClient = require('socket.io-client');
@@ -18,25 +16,49 @@ app
 				+ '/../bower_components'));
 app.use('/assets', express.static(__dirname + '/../assets'));
 
-shrinkService.path = 'shrink';
-shrinkService.listen(shrinkPort, function() {
-	console.log('Listening on port %d', shrinkPort);
-});
 patientService.listen(patientPort, function() {
 	console.log('Listening on port %d', patientPort);
 });
 
 var johanSocket = sockClient.connect(shrinkServer, {
 	reconnect : true,
+	reconnectionDelay : 15000
 });
+
+var patientSessionMap = {};
+
 johanSocket.on('connect_error', function(object) {
 	var args = Array.prototype.slice.apply(arguments);
 	console.log('Client failed to connect to Johan\'s server ', args);
 });
 
-var patientSessionMap = {};
+johanSocket.on('session-started', function(msg) {
+	var userName = msg.userName;
+	var shrinkName = msg.shrinkName;
+	console.log('session started ,', userName);
+	var patientSocket = patientSessionMap[userName];
+	patientSocket.emit('started', {
+		'userName' : userName,
+		'shrink' : shrinkName
+	});
+});
+
+johanSocket.on('ping', function(msg) {
+	console.log('Got pinged');
+	patientWebSocketServer.emit('pong', msg);
+});
+
+johanSocket.on('message', function(msg) {
+	var patient = msg.patient;
+	var text = msg.text;
+	console.log('Received %s for %s', text, receiver);
+	var patientSocket = patientSocketMap[patient];
+	patientSocket.emit('message', text);
+});
 
 patientWebSocketServer.on('connection', function(socket) {
+	console.log('Client connected');
+
 	socket.on('disconnect', function(object) {
 		if (socket.hasOwnProperty('patient')) {
 			console.log('Clearing session of ', socket.patient);
@@ -44,23 +66,21 @@ patientWebSocketServer.on('connection', function(socket) {
 			delete socket.patient;
 		}
 	});
-	console.log('Client connected');
+
 	socket.on('start', function(msg) {
 		socket.emit('started', {
 			'shrink' : 'Dr Ruth'
 		});
 		var userName = msg.userName;
 		console.log('session started ,', userName);
-		patientWebSocketServer.emit('started');
 		johanSocket.emit('start-session', {
 			"patient" : userName
 		});
 		patientSessionMap[userName] = socket;
 		socket.patient = userName;
 	});
-	socket.on('message', function(msg) {
-		receiver = msg.receiver;
-		text = msg.text;
+
+	socket.on('message', function(text) {
 		console.log('Received %s for %s', text, receiver);
 		johanSocket.emit('patient-message', {
 			"patient" : userName,
@@ -69,23 +89,8 @@ patientWebSocketServer.on('connection', function(socket) {
 	});
 });
 
-shrinkWebSocketServer.on('connection', function(socket) {
+johanSocket.on('connection', function(socket) {
 	console.log('Client connected');
-	socket.on('session-started', function(msg) {
-		var userName = msg.userName;
-		var shrinkName = msg.shrinkName;
-		console.log('session started ,', userName);
-		patientWebSocketServer.emit('started');
-	});
-	socket.on('ping', function(msg) {
-		console.log('Got pinged');
-		patientWebSocketServer.emit('pong', msg);
-	});
-	socket.on('message', function(msg) {
-		receiver = msg.receiver;
-		text = msg.text;
-		console.log('Received %s for %s', text, receiver);
-	});
 });
 
 // Test blocks
