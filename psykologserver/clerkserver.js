@@ -11,34 +11,54 @@ app.use(express.static(__dirname + '/public'));
 app.use('/bower_components', express.static(__dirname + '/../bower_components'));
 app.use('/assets', express.static(__dirname + '/../assets'));
 
-wackoServer.listen(wackoPort = 3000);
-wackoServer.listen(clerkPort = 4002);
+wackoServer.listen(3000);
+clerkServer.listen(4002);
 
 var wackoSessions = [];
 var clerkSessions = [];
 
 wackoIo.on('connection', function (socket) {
-    socket.on('message', function (msg) {
+    console.log("wacko-connected´", socket.id);
+    socket.on('patient-message', function (msg) {
+        console.log("wacko-Anders skickade", msg);
         wackoMessageWasReceived(msg, socket);
     });
+    socket.on('message', function (msg) {
+        console.log("waco-message", msg);
+        wackoMessageWasReceived(msg, socket);
+    });
+    socket.on('patient-message', function (msg) {
+        console.log("waco-message", msg);
+        wackoMessageWasReceived(msg, socket);
+    });
+
     socket.on('start-session', function (msg) {
+        console.log("waco-start", msg);
         wackoWasConnected(msg, socket);
         match();
     });
     socket.on('disconnect', function () {
-        socket.ondisconnect();
+        console.log("waco-disconnect");
+        //socket.onDisconnect();
     });
 });
 clerkIo.on('connection', function (socket) {
+
+    console.log("Clerk connectade", socket.id);
     socket.on('message', function (msg) {
+        console.log("clerk-msg", msg);
         clerkMessageWasReceived(msg, socket);
     });
-    socket.on('start', function (msg) {
+    socket.on('start-session', function (msg) {
+        console.log("Clerk startade session");
         clerkWasConnected(msg, socket);
         match();
     });
     socket.on('disconnect', function () {
-        socket.ondisconnect();
+        if (socket != undefined){
+
+        }
+        //socket.onDisconnect();
     });
 });
 
