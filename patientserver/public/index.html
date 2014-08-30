@@ -22,12 +22,16 @@
     <chat-box></chat-box>
   </section>
   <script>
-  var socket = io();
+    var socket = io();
     document.querySelector('chat-box').addEventListener('login', function(e) {
-
 			socket.emit('start', {userName : e.detail.username});
-						console.log(e.detail.username);
-					});
+      console.log(e.detail.username);
+    });
+
+    document.querySelector('chat-box').addEventListener('chat', function(e) {
+      socket.emit('message', {msg : e.detail.message});
+      console.log(e.detail.message);
+    });
 		</script>
 </body>
 </html>
