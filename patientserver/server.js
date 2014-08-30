@@ -8,8 +8,8 @@ var patientService = require('http').createServer(app);
 patientService.path = 'patient';
 var patientWebSocketServer = require('socket.io')(patientService);
 var patientPort = 4001;
-var shrinkServer = 'http://localhost:3000/johan';
-//var shrinkServer = 'http://10.59.1.206:3000/johan';
+//var shrinkServer = 'http://localhost:3000/johan';
+var shrinkServer = 'http://10.59.1.206:3000/johan';
 var sockClient = require('socket.io-client');
 app.use(express.static(__dirname + '/public'));
 app
