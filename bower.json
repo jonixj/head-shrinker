@@ -12,7 +12,8 @@
     "tests"
   ],
   "dependencies": {
-    "core-component-page": "Polymer/core-component-page#>=0.4.0 <1.0.0"
+    "core-component-page": "Polymer/core-component-page#>=0.4.0 <1.0.0",
+    "normalize-css": "necolas/normalize.css#~3.0.1"
   },
   "homepage": "https://github.com/jonixj/head-shrinker",
   "authors": [
