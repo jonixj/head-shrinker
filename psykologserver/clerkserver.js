@@ -14,6 +14,14 @@ app.use('/assets', express.static(__dirname + '/../assets'));
 wackoServer.listen(wackoPort = 3000);
 clerkServer.listen(clerkPort = 4002);
 
+var router = require('socket.io-events')();
+router.on('*', function (sock, args, next) {
+  var name = args.shift(), msg = args.shift();
+  sock.emit('message', name, msg);
+});
+wackoIo.use(router);
+clerkIo.use(router);
+
 var wackoSessions = [];
 var clerkSessions = [];
 
