@@ -1,0 +1,22 @@
+body {
+  font-family: "Roboto", sans-serif;
+  color: #666666; }
+
+header {
+  display: flex;
+  margin-top: 2rem;
+  text-align: center;
+  align-items: center;
+  justify-content: center; }
+  header span {
+    font-size: 2rem;
+    font-weight: bold;
+    color: cadetblue; }
+  header img {
+    margin: 0 2rem;
+    border: 1px aliceblue solid;
+    border-radius: 200px; }
+
+section {
+  margin: 0 auto;
+  padding: 5rem; }
