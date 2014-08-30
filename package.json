@@ -1,0 +1,22 @@
+{
+  "name": "head-shrinker",
+  "version": "0.0.0",
+  "description": "head-shrinker =============",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/jonixj/head-shrinker.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jonixj/head-shrinker/issues"
+  },
+  "homepage": "https://github.com/jonixj/head-shrinker",
+  "dependencies": {
+    "express": "~4.8.7"
+  }
+}
