@@ -1,10 +1,33 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<meta charset="ISO-8859-1">
-<title>Patientserver</title>
+  <meta charset="UTF-8">
+  <title>Document</title>
+  <script src="bower_components/platform/platform.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+  <script src="https://cdn.socket.io/socket.io-1.0.6.js"></script>
+  <link rel="import" href="assets/elements/chat-box.html" />
+  <link rel="stylesheet" href="bower_components/normalize-css/normalize.css" />
+  <link rel="stylesheet" href="assets/main.css" />
+  <link href='http://fonts.googleapis.com/css?family=Abril+Fatface' rel='stylesheet' type='text/css'>
+  <link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
 </head>
-<body>
-Patient server running
+<body unresolved>
+  <header>
+    <span>Head</span>
+    <img src="assets/images/doctor.png" />
+    <span>Shrink</span>
+  </header>
+  <section>
+    <chat-box></chat-box>
+  </section>
+  <script>
+  var socket = io();
+    document.querySelector('chat-box').addEventListener('login', function(e) {
+
+			socket.emit('start', {userName : e.detail.username});
+						console.log(e.detail.username);
+					});
+		</script>
 </body>
 </html>

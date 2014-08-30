@@ -4,6 +4,7 @@ var bodyParser = require('body-parser');
 var patientService = require('http').createServer(app);
 var shrinkService = require('http').createServer(app);
 
+patientService.path='patient';
 var patientWebSocketServer = require('socket.io')(patientService);
 var shrinkWebSocketServer = require('socket.io')(shrinkService);
 var shrinkPort = 4000;
@@ -12,12 +13,13 @@ var shrinkServer = 'http://10.59.1.206:3000/johan';
 var sockClient = require('socket.io-client');
 app.use(bodyParser.json());
 app.use(express.static(__dirname + '/public'));
+app.use('/bower_components',  express.static(__dirname + '/../bower_components'));
+app.use('/assets',  express.static(__dirname + '/../assets'));
 
 shrinkService.path='shrink';
 shrinkService.listen(shrinkPort, function() {
 	console.log('Listening on port %d', shrinkPort);
 });
-patientService.path='patient';
 patientService.listen(patientPort, function() {
 	console.log('Listening on port %d', patientPort);
 });
@@ -26,13 +28,15 @@ var johanSocket = sockClient.connect(shrinkServer, {
 	reconnect : true,
 });
 johanSocket.on('connect_error', function(object) {
-	console.log('Client failed to connect ', object);
+	var args = Array.prototype.slice.apply(arguments);
+	console.log('Client failed to connect to Johan\'s server ', args);
 });
 
 patientWebSocketServer.on('connection', function(socket) {
 	console.log('Client connected');
 	socket.on('start', function(msg) {
-		userName = msg.userName;
+		socket.emit('started', {'shrink' : 'Dr Ruth'});
+		var userName = msg.userName;
 		console.log('session started ,', userName);
 		patientWebSocketServer.emit('started');
 		johanSocket.emit('start-session', {"patient" : userName});
