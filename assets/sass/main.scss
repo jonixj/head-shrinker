@@ -1,0 +1,42 @@
+body {
+    color: #666666;
+    font-family: 'Open Sans', sans-serif;
+}
+
+header {
+    display: flex;
+
+    margin: 2rem 0 3rem;
+
+    text-align: center;
+
+    align-items: center;
+    justify-content: center;
+
+    span {
+      font-size: 2rem;
+      font-weight: bold;
+      color: cadetblue;
+      font-family: 'Abril Fatface', cursive;
+    }
+
+    img {
+        margin: 0 2rem;
+
+        border: 1px aliceblue solid;
+        border-radius: 200px;
+    }
+}
+
+section {
+  margin: 0 auto;
+  padding: 2rem;
+  width: 80%;
+  background: #e1e1e1;
+  border-radius: 5px;
+}
+
+// chat-box {
+//   opacity: 1;
+//   transition: opacity 300ms;
+// }
